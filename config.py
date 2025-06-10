@@ -1,4 +1,7 @@
-from pydantic import BaseSettings
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:  # fallback for Pydantic v1
+    from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     BOT_TOKEN: str
