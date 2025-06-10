@@ -3,3 +3,4 @@ aiogram>=3.0.0
 SQLAlchemy>=2.0
 asyncpg
 pydantic
+pydantic-settings
