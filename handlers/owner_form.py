@@ -4,6 +4,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+from config import settings
+
 from database.models import OwnerApplication
 from database.session import async_session
 
@@ -90,6 +92,41 @@ async def owner_contact(message: types.Message, state: FSMContext) -> None:
     async with async_session() as session:
         session.add(app)
         await session.commit()
+    photos = data.get("photos", [])
+    admin_text = (
+        f"Вид: {data.get('species')}\n"
+        f"Город: {data.get('city')}\n"
+        f"Возраст: {data.get('age')}\n"
+        f"Пол: {data.get('gender')}\n"
+        f"Описание: {data.get('description')}"
+    )
+
+    kb = types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(text="Одобрить", callback_data="approve"),
+                types.InlineKeyboardButton(text="Отклонить", callback_data="decline"),
+            ]
+        ]
+    )
+
+    if photos:
+        first, *rest = photos
+        await message.bot.send_photo(
+            settings.ADMIN_CHAT_ID,
+            first,
+            caption=admin_text,
+            reply_markup=kb,
+        )
+        for photo in rest:
+            await message.bot.send_photo(settings.ADMIN_CHAT_ID, photo)
+    else:
+        await message.bot.send_message(
+            settings.ADMIN_CHAT_ID,
+            admin_text,
+            reply_markup=kb,
+        )
+
     await message.answer("Заявка отправлена администраторам.")
     await state.clear()
 

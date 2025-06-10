@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from database.models import SeekerApplication, Photo
 from database.session import async_session
+from config import settings
 
 router = Router()
 
@@ -80,7 +81,46 @@ async def seeker_photos_done(message: types.Message, state: FSMContext) -> None:
     async with async_session() as session:
         session.add(app)
         await session.commit()
-    await message.answer("Спасибо, ваша заявка отправлена администратору.", reply_markup=types.ReplyKeyboardRemove())
+    photos = data.get("photos", [])
+    admin_text = (
+        f"Возраст: {data.get('age')}\n"
+        f"Город: {data.get('city')}\n"
+        f"Жильё: {data.get('housing')}\n"
+        f"Другие птицы: {data.get('other_birds')}\n"
+        f"Животные/дети: {data.get('animals_kids')}\n"
+        f"Опыт: {data.get('experience')}"
+    )
+
+    kb = types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(text="Одобрить", callback_data="approve"),
+                types.InlineKeyboardButton(text="Отклонить", callback_data="decline"),
+            ]
+        ]
+    )
+
+    if photos:
+        first, *rest = photos
+        await message.bot.send_photo(
+            settings.ADMIN_CHAT_ID,
+            first,
+            caption=admin_text,
+            reply_markup=kb,
+        )
+        for photo in rest:
+            await message.bot.send_photo(settings.ADMIN_CHAT_ID, photo)
+    else:
+        await message.bot.send_message(
+            settings.ADMIN_CHAT_ID,
+            admin_text,
+            reply_markup=kb,
+        )
+
+    await message.answer(
+        "Спасибо, ваша заявка отправлена администратору.",
+        reply_markup=types.ReplyKeyboardRemove(),
+    )
     await state.clear()
 
 @router.message(StateFilter(SeekerForm.photos), content_types=types.ContentType.PHOTO)
