@@ -1,6 +1,6 @@
-aiohttp
-aiogram>=3.0.0
+aiogram[fastapi]>=3.4.1
 SQLAlchemy>=2.0
 asyncpg
-pydantic
+pydantic>=2.0
 pydantic-settings
+python-dotenv

@@ -1,5 +1,5 @@
 from aiogram import Router, types
-from aiogram.filters import CallbackQuery
+from aiogram.types import CallbackQuery
 from config import settings
 
 router = Router()

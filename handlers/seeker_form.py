@@ -1,8 +1,8 @@
-from aiogram import Router, types
-from aiogram.filters import Command, StateFilter
-from aiogram.fsm.state import StatesGroup, State
+from aiogram import Router, F
+from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.fsm.state import StatesGroup, State
+from messaging import send_application_to_admin
 
 router = Router()
 
@@ -11,67 +11,74 @@ class SeekerForm(StatesGroup):
     city = State()
     housing = State()
     other_birds = State()
-    animals_kids = State()
+    pets_children = State()
     experience = State()
     photos = State()
 
-@router.message(Command("Хочу приютить"))
-async def start_seeker(message: types.Message, state: FSMContext):
+@router.message(F.text == "Заполнить анкету")
+async def start_seeker(message: Message, state: FSMContext):
+    await message.answer("1. Укажите ваш возраст:")
     await state.set_state(SeekerForm.age)
-    await message.answer("Укажите ваш возраст:")
 
-@router.message(StateFilter(SeekerForm.age))
-async def seeker_age(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.age)
+async def ask_city(message: Message, state: FSMContext):
     await state.update_data(age=message.text)
+    await message.answer("2. Укажите город проживания:")
     await state.set_state(SeekerForm.city)
-    await message.answer("Ваш город:")
 
-@router.message(StateFilter(SeekerForm.city))
-async def seeker_city(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.city)
+async def ask_housing(message: Message, state: FSMContext):
     await state.update_data(city=message.text)
+    await message.answer("3. Проживаете в своей или арендованной квартире?")
     await state.set_state(SeekerForm.housing)
-    await message.answer("Своя или арендованная жилплощадь:")
 
-@router.message(StateFilter(SeekerForm.housing))
-async def seeker_housing(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.housing)
+async def ask_other_birds(message: Message, state: FSMContext):
     await state.update_data(housing=message.text)
+    await message.answer("4. Есть ли другие птицы? Были ли они обследованы?")
     await state.set_state(SeekerForm.other_birds)
-    await message.answer("Есть ли другие птицы? Обследованы ли они:")
 
-@router.message(StateFilter(SeekerForm.other_birds))
-async def seeker_other_birds(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.other_birds)
+async def ask_pets(message: Message, state: FSMContext):
     await state.update_data(other_birds=message.text)
-    await state.set_state(SeekerForm.animals_kids)
-    await message.answer("Другие животные или дети до 7 лет:")
+    await message.answer("5. Есть ли другие животные или дети до 7 лет?")
+    await state.set_state(SeekerForm.pets_children)
 
-@router.message(StateFilter(SeekerForm.animals_kids))
-async def seeker_animals(message: types.Message, state: FSMContext):
-    await state.update_data(animals_kids=message.text)
+@router.message(SeekerForm.pets_children)
+async def ask_experience(message: Message, state: FSMContext):
+    await state.update_data(pets_children=message.text)
+    await message.answer("6. Расскажите об опыте содержания птиц:")
     await state.set_state(SeekerForm.experience)
-    await message.answer("Опыт содержания птиц:")
 
-@router.message(StateFilter(SeekerForm.experience))
-async def seeker_experience(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.experience)
+async def ask_photos(message: Message, state: FSMContext):
     await state.update_data(experience=message.text)
+    await message.answer(
+        "7. Пришлите фотографии условий, в которых будет содержаться птица.\n"
+        "Когда отправите все фото, нажмите кнопку \"Готово\".",
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="Готово")]],
+            resize_keyboard=True,
+        ),
+    )
     await state.set_state(SeekerForm.photos)
-    kb = ReplyKeyboardBuilder()
-    kb.button(text="Готово")
-    await message.answer("Прикрепите до 5 фотографий. Отправьте 'Готово' когда закончите", reply_markup=kb.as_markup(resize_keyboard=True))
 
-@router.message(StateFilter(SeekerForm.photos), Command("Готово"))
-@router.message(StateFilter(SeekerForm.photos), lambda m: m.text == "Готово")
-async def seeker_photos_done(message: types.Message, state: FSMContext):
-    await message.answer("Спасибо, ваша заявка отправлена администратору.")
-    await state.clear()
-
-@router.message(StateFilter(SeekerForm.photos), content_types=types.ContentType.PHOTO)
-async def seeker_photos(message: types.Message, state: FSMContext):
+@router.message(SeekerForm.photos, F.photo)
+async def handle_photo(message: Message, state: FSMContext):
     data = await state.get_data()
     photos = data.get("photos", [])
-    if len(photos) >= 5:
-        await message.answer("Достаточно фотографий. Отправьте 'Готово'.")
-        return
     photos.append(message.photo[-1].file_id)
     await state.update_data(photos=photos)
-    await message.answer(f"Фото {len(photos)} получено")
 
+@router.message(SeekerForm.photos, F.text == "Готово")
+async def handle_done(message: Message, state: FSMContext):
+    data = await state.get_data()
+    # Добавляем username как контакт
+    contact = message.from_user.username or f"id:{message.from_user.id}"
+    data["contact"] = f"@{contact}" if message.from_user.username else contact
+    await send_application_to_admin(data, message.bot)
+    await message.answer(
+        "Заявка отправлена, спасибо, с вами свяжется администратор.",
+        reply_markup=ReplyKeyboardMarkup(keyboard=[[]], resize_keyboard=True),
+    )
+    await state.clear()
