@@ -1,6 +1,6 @@
 try:
     from pydantic_settings import BaseSettings
-except ImportError:  # fallback for Pydantic v1
+except ImportError:
     from pydantic import BaseSettings
 
 class Settings(BaseSettings):
