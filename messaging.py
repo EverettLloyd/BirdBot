@@ -7,21 +7,21 @@ async def send_application_to_admin(data: dict, bot: Bot, is_owner: bool = False
 
     if is_owner:
         caption_lines.append("📤 <b>Анкета владельца птицы</b>")
-        caption_lines.append(f"🐦 Имя птицы: {data.get('bird_name')}")
-        caption_lines.append(f"📋 Вид, пол, возраст: {data.get('bird_type')}")
-        caption_lines.append(f"🩺 Здоровье и анализы: {data.get('health_info')}")
-        caption_lines.append(f"❓ Причина пристройства: {data.get('reason')}")
-        caption_lines.append(f"🎯 Пожелания к хозяевам: {data.get('wishes')}")
+        caption_lines.append(f"Имя птицы: {data.get('bird_name')}")
+        caption_lines.append(f"Вид, пол, возраст: {data.get('bird_type')}")
+        caption_lines.append(f"Здоровье и анализы: {data.get('health_info')}")
+        caption_lines.append(f"Причина пристройства: {data.get('reason')}")
+        caption_lines.append(f"Пожелания к хозяевам: {data.get('wishes')}")
     else:
         caption_lines.append("📥 <b>Анкета соискателя</b>")
-        caption_lines.append(f"🎂 Возраст: {data.get('age')}")
-        caption_lines.append(f"📍 Город: {data.get('city')}")
-        caption_lines.append(f"🏠 Жильё: {data.get('housing')}")
-        caption_lines.append(f"🕊️ Другие птицы: {data.get('other_birds')}")
-        caption_lines.append(f"👶 Дети/Животные: {data.get('pets_children')}")
-        caption_lines.append(f"🧠 Опыт: {data.get('experience')}")
+        caption_lines.append(f"Возраст: {data.get('age')}")
+        caption_lines.append(f"Город: {data.get('city')}")
+        caption_lines.append(f"Жильё: {data.get('housing')}")
+        caption_lines.append(f"Другие птицы: {data.get('other_birds')}")
+        caption_lines.append(f"Дети/Животные: {data.get('pets_children')}")
+        caption_lines.append(f"Опыт: {data.get('experience')}")
 
-    caption_lines.append(f"📱 Контакт: {data.get('contact')}")
+    caption_lines.append(f"Контакт: {data.get('contact')}")
 
     caption = "\n".join(caption_lines)
     photos = data.get("photos", [])

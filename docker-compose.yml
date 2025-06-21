@@ -1,19 +1,25 @@
-version: '3.8'
+version: "3.9"
+
 services:
-  db:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: birdbot
-      POSTGRES_PASSWORD: birdbot
-      POSTGRES_DB: birdbot
-    volumes:
-      - pgdata:/var/lib/postgresql/data
   bot:
     build: .
-    env_file: .env
+    container_name: birdbot
+    env_file:
+      - .env
     depends_on:
       - db
-    command: python -m bot
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: birdbot-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
-  pgdata:
+  postgres_data:
