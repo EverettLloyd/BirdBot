@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  birdbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: birdbot
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    # если используешь polling (как сейчас)
+    command: python -u bot.py
+    # если планируешь webhook:
+    # ports:
+    #   - "8080:8080"
