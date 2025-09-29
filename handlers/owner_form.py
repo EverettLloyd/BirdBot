@@ -4,9 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
 from keyboards import main_menu_kb, BTN_CANCEL
-from messaging import send_application_to_admin
 from photos import ask_photos as ask_photos_step, setup_photos_step
 from phone import ask_phone, setup_phone_step
+from finalizer import finalize_form
 
 router = Router()
 
@@ -65,11 +65,6 @@ async def ask_phone_step(message: Message, state: FSMContext):
     await state.set_state(OwnerForm.phone)
 
 async def finalize_owner(message: Message, state: FSMContext):
-    data = await state.get_data()
-    tg = message.from_user.username or f"id:{message.from_user.id}"
-    data["contact"] = f"@{tg}" if message.from_user.username else tg
-    await send_application_to_admin(data, message.bot, form_type="owner")
-    await message.answer("Анкета отправлена. С вами свяжется администратор.", reply_markup=main_menu_kb())
-    await state.clear()
+    await finalize_form(message, state, form_type="owner")
 
 setup_phone_step(router, OwnerForm.phone, finalize_owner)
