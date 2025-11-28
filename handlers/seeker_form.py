@@ -45,7 +45,7 @@ async def ask_occupation(message: Message, state: FSMContext):
 @router.message(SeekerForm.occupation)
 async def ask_housing(message: Message, state: FSMContext):
     await state.update_data(occupation=(message.text or "").strip())
-    await message.answer("Жильё: своё или аренда?")
+    await message.answer("Вы проживаете в собственном жилье или арендуете?")
     await state.set_state(SeekerForm.housing)
 
 @router.message(SeekerForm.housing)
@@ -57,13 +57,13 @@ async def ask_pets_children(message: Message, state: FSMContext):
 @router.message(SeekerForm.pets_children)
 async def ask_other_birds(message: Message, state: FSMContext):
     await state.update_data(pets_children=(message.text or "").strip())
-    await message.answer("Если есть птицы: обследования? к какому врачу ходите? готовы к затратам?")
+    await message.answer("У вас есть птицы? Если да, проводились ли обследования? К какому врачу обращаетесь? Понимаете ли вы, что затраты на ветеринарные услуги для птиц выше, чем для кошек и собак (от 15 тысяч рублей в среднем за один полный диагностический прием?) ")
     await state.set_state(SeekerForm.other_birds)
 
 @router.message(SeekerForm.other_birds)
 async def ask_experience(message: Message, state: FSMContext):
     await state.update_data(other_birds=(message.text or "").strip())
-    await message.answer("В 2–3 предложениях об опыте содержания: что знаете, чем кормите:")
+    await message.answer("Расскажите в 2-3 предложениях о своем опыте содержания и знания о птицах в доме. Как планируете кормить, какие нюансы вы знаете?")
     await state.set_state(SeekerForm.experience)
 
 @router.message(SeekerForm.experience)

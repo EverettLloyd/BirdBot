@@ -43,14 +43,7 @@ async def ask_datetime(message: Message, state: FSMContext):
 async def ask_address(message: Message, state: FSMContext):
     await state.update_data(datetime_lost=(message.text or "").strip())
     await message.answer(
-        "Адрес (район, ориентиры):\n\n"
-        "Совет: продублируйте объявление в городских группах помощи.\n\n"
-        "Горячая линия Вороньего Гнезда может связать вас с передержкой найденных попугаев: 8 (499) 504-04-95\n\n"
-        "Общие объявления о потерянных и найденных животных Москвы и МО:\n"
-        "https://t.me/HvostatPatrul\n"
-        "https://chat.whatsapp.com/JcEx0wSnjCdKkX06vsZo4m\n\n"
-        "Всероссийская система поиска домашних питомцев:\n"
-        "https://pet911.ru/"
+        "Адрес (район, ориентиры):"
     )
     await state.set_state(LostForm.address)
 

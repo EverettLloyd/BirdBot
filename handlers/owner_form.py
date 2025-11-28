@@ -53,7 +53,7 @@ async def ask_photos(message: Message, state: FSMContext):
     await state.set_state(OwnerForm.photos)
 
 async def proceed_to_wishes(message: Message, state: FSMContext):
-    await message.answer("Пожелания к новому дому (врач, держать связь и т.д.):")
+    await message.answer("Укажите ваши пожелания к новому дому: поддерживать обратную связь в виде фото и видео, продолжить обращаться к тому же лечащему врачу и тд:")
     await state.set_state(OwnerForm.wishes)
 
 setup_photos_step(router, OwnerForm.photos, on_done=proceed_to_wishes, photos_key="photos", max_photos=5)

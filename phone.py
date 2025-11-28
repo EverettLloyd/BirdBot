@@ -15,7 +15,7 @@ def normalize_phone(raw: str) -> str:
     return s
 
 def phone_prompt_text() -> str:
-    return "Укажите номер телефона для связи. Можно нажать кнопку для отправки или введите вручную."
+    return "Укажите номер телефона для связи. Можно нажать кнопку для отправки или введите вручную в формате +7."
 
 async def ask_phone(message: Message, state: FSMContext):
     """Показываем шаг ввода телефона (текст + клавиатура)."""
