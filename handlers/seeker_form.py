@@ -25,7 +25,7 @@ async def start_seeker(message: Message, state: FSMContext):
     await message.answer("Укажите город:", reply_markup=cancel_kb())
     await state.set_state(SeekerForm.city)
 
-@router.message(lambda m: m.text == BTN_CANCEL)
+@router.message(F.text == BTN_CANCEL)
 async def cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("Анкета прервана.", reply_markup=main_menu_kb())

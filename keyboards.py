@@ -39,5 +39,6 @@ def yes_no_kb():
     kb = ReplyKeyboardBuilder()
     kb.button(text="Да")
     kb.button(text="Нет")
+    kb.button(text=BTN_CANCEL)
     kb.adjust(2, 1)
     return kb.as_markup(resize_keyboard=True)

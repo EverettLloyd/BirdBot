@@ -3,7 +3,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from keyboards import main_menu_kb, yes_no_kb, BTN_CANCEL
+from keyboards import main_menu_kb, yes_no_kb, BTN_CANCEL, cancel_kb
 from photos import ask_photos as ask_photos_step, setup_photos_step
 from phone import ask_phone, setup_phone_step
 from config import settings
@@ -21,10 +21,10 @@ class FoundForm(StatesGroup):
     phone = State()
 
 async def start_found(message: Message, state: FSMContext):
-    await message.answer("Город:", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Город:", reply_markup=cancel_kb())
     await state.set_state(FoundForm.city)
 
-@router.message(lambda m: m.text == BTN_CANCEL)
+@router.message(F.text == BTN_CANCEL)
 async def cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("Анкета прервана.", reply_markup=main_menu_kb())
@@ -32,19 +32,19 @@ async def cancel(message: Message, state: FSMContext):
 @router.message(FoundForm.city)
 async def ask_species(message: Message, state: FSMContext):
     await state.update_data(city=(message.text or "").strip())
-    await message.answer("Вид птицы (если не уверены — опишите):")
+    await message.answer("Вид птицы (если не уверены — опишите):", reply_markup=cancel_kb())
     await state.set_state(FoundForm.species)
 
 @router.message(FoundForm.species)
 async def ask_datetime(message: Message, state: FSMContext):
     await state.update_data(species=(message.text or "").strip())
-    await message.answer("Дата и время находки:")
+    await message.answer("Дата и время находки:", reply_markup=cancel_kb())
     await state.set_state(FoundForm.datetime_found)
 
 @router.message(FoundForm.datetime_found)
 async def ask_address(message: Message, state: FSMContext):
     await state.update_data(datetime_found=(message.text or "").strip())
-    await message.answer("Адрес (район, ориентиры):")
+    await message.answer("Адрес (район, ориентиры):", reply_markup=cancel_kb())
     await state.set_state(FoundForm.address)
 
 @router.message(FoundForm.address)
