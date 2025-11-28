@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from keyboards import done_kb
+from keyboards import done_kb, BTN_CANCEL, main_menu_kb
 
 DEFAULT_MAX_PHOTOS = 5
 
@@ -50,3 +50,8 @@ def setup_photos_step(
     @router.message(photos_state, F.text == "Готово")
     async def _done(message: Message, state: FSMContext):
         await on_done(message, state)
+
+    @router.message(photos_state, F.text == BTN_CANCEL)
+    async def _cancel(message: Message, state: FSMContext):
+        await state.clear()
+        await message.answer("Анкета прервана.", reply_markup=main_menu_kb())

@@ -19,11 +19,15 @@ def main_menu_kb():
 def done_kb():
     kb = ReplyKeyboardBuilder()
     kb.button(text="Готово")
+    kb.button(text=BTN_CANCEL)
+    kb.adjust(2, 1)
     return kb.as_markup(resize_keyboard=True)
 
 def phone_kb():
     kb = ReplyKeyboardBuilder()
     kb.add(KeyboardButton(text="📱 Поделиться номером", request_contact=True))
+    kb.button(text=BTN_CANCEL)
+    kb.adjust(2, 1)
     return kb.as_markup(resize_keyboard=True, one_time_keyboard=True)
 
 def cancel_kb():

@@ -3,7 +3,7 @@ import re
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from keyboards import phone_kb
+from keyboards import phone_kb, BTN_CANCEL, main_menu_kb
 
 PHONE_RE = re.compile(r"^\+\d{10,15}$")
 
@@ -40,6 +40,11 @@ def setup_phone_step(router: Router, phone_state, on_done):
             return
         await state.update_data(phone=phone)
         await on_done(message, state)
+
+    @router.message(phone_state, F.text == BTN_CANCEL)
+    async def _cancel(message: Message, state: FSMContext):
+        await state.clear()
+        await message.answer("Анкета прервана.", reply_markup=main_menu_kb())
 
     @router.message(phone_state)
     async def _got_text(message: Message, state: FSMContext):
