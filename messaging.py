@@ -78,8 +78,7 @@ async def _send_album_or_text(bot: Bot, chat_id: int, photos: list[str], caption
         await bot.send_media_group(chat_id, media)
 
 async def send_application_to_admin(
-    data: dict, bot: Bot, *, form_type: str, photos_key: str = "photos",
-    duplicate_to_channel: bool = False
+    data: dict, bot: Bot, *, form_type: str, photos_key: str = "photos"
 ):
     # Формируем анкету без контактов
     caption = _format_caption(form_type, data, include_contacts=False)
@@ -92,9 +91,3 @@ async def send_application_to_admin(
     contacts_text = _format_contacts(data)
     if contacts_text:
         await bot.send_message(settings.ADMIN_CHAT_ID, contacts_text, parse_mode="HTML")
-    
-    # Если нужно дублировать в канал
-    if duplicate_to_channel and getattr(settings, "PUBLICATION_CHANNEL_ID", None):
-        await _send_album_or_text(bot, settings.PUBLICATION_CHANNEL_ID, photos, caption)
-        if contacts_text:
-            await bot.send_message(settings.PUBLICATION_CHANNEL_ID, contacts_text, parse_mode="HTML")

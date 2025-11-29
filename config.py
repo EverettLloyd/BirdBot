@@ -6,7 +6,6 @@ except ImportError:
 class Settings(BaseSettings):
     BOT_TOKEN: str
     ADMIN_CHAT_ID: int
-    PUBLICATION_CHANNEL_ID: int | None = None
     CARE_ADMIN_CONTACT: str | None = None  # например, "@bird_admin"
 
     class Config:

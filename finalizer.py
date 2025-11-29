@@ -33,15 +33,13 @@ async def finalize_form(
     state: FSMContext,
     *,
     form_type: str,
-    duplicate_to_channel: bool = False,
     custom_text: Optional[str] = None,
 ) -> None:
     """
-    Универсальная финализация: добавляет контакт, отправляет анкету админу/в канал,
+    Универсальная финализация: добавляет контакт, отправляет анкету админу,
     показывает главное меню и очищает FSM.
 
     - form_type: ключ шаблона в messaging.FORM_TEMPLATES / FORM_TITLES
-    - duplicate_to_channel: при True дубль улетит в канал (если настроен)
     - custom_text: переопределяет текст финального сообщения (если нужно точечно)
     """
     data = await state.get_data()
@@ -55,7 +53,6 @@ async def finalize_form(
         data,
         message.bot,
         form_type=form_type,
-        duplicate_to_channel=duplicate_to_channel,
     )
 
     # Текст финального сообщения
