@@ -25,6 +25,7 @@ FORM_TEMPLATES = {
         ("pets_children", "Другие животные/дети до 7"),
         ("other_birds", "Птицы/обследования/врач/затраты"),
         ("experience", "Опыт (2–3 предложения)"),
+        ("post_link", "Ссылка на пост"),
     ],
     "lost": [
         ("city", "Город"),
@@ -44,7 +45,9 @@ FORM_TEMPLATES = {
 def _format_caption(form_type: str, data: dict) -> str:
     caption = [FORM_TITLES.get(form_type, f"<b>{form_type}</b>")]
     for key, label in FORM_TEMPLATES.get(form_type, []):
-        caption.append(f"{label}: {data.get(key)}")
+        value = data.get(key)
+        if value is not None and str(value).strip():
+            caption.append(f"{label}: {value}")
     phone = data.get("phone")
     contact = data.get("contact")
     if phone:   caption.append(f"Телефон: {phone}")

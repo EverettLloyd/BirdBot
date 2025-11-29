@@ -43,7 +43,7 @@ async def ask_reason(message: Message, state: FSMContext):
 @router.message(OwnerForm.reason)
 async def ask_health(message: Message, state: FSMContext):
     await state.update_data(reason=(message.text or "").strip())
-    await message.answer("Обследования и анализы:", reply_markup=cancel_kb())
+    await message.answer("Посещала ли птица врача? Если да, то ФИО врача, результаты обследований:", reply_markup=cancel_kb())
     await state.set_state(OwnerForm.health_info)
 
 @router.message(OwnerForm.health_info)

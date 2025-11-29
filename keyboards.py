@@ -7,6 +7,7 @@ BTN_SEEKER = "🐣 Хочу приютить"
 BTN_LOST   = "🆘 Потерялась птица"
 BTN_FOUND  = "✅ Нашлась птица"
 BTN_CANCEL = "❌ Отмена"
+BTN_SKIP   = "⏭ Пропустить"
 
 
 def main_menu_kb():
@@ -39,6 +40,13 @@ def yes_no_kb():
     kb = ReplyKeyboardBuilder()
     kb.button(text="Да")
     kb.button(text="Нет")
+    kb.button(text=BTN_CANCEL)
+    kb.adjust(2, 1)
+    return kb.as_markup(resize_keyboard=True)
+
+def skip_kb():
+    kb = ReplyKeyboardBuilder()
+    kb.button(text=BTN_SKIP)
     kb.button(text=BTN_CANCEL)
     kb.adjust(2, 1)
     return kb.as_markup(resize_keyboard=True)

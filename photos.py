@@ -11,9 +11,10 @@ def photos_prompt_text(max_photos: int = DEFAULT_MAX_PHOTOS) -> str:
         "Когда отправите все фото, нажмите «Готово»."
     )
 
-async def ask_photos(message: Message, state: FSMContext, *, max_photos: int = DEFAULT_MAX_PHOTOS):
+async def ask_photos(message: Message, state: FSMContext, *, max_photos: int = DEFAULT_MAX_PHOTOS, custom_prompt_text: str = None):
     """Показываем шаг с фотографиями (текст + клавиатура «Готово»)."""
-    await message.answer(photos_prompt_text(max_photos), reply_markup=done_kb())
+    prompt = custom_prompt_text if custom_prompt_text else photos_prompt_text(max_photos)
+    await message.answer(prompt, reply_markup=done_kb())
     # состояние устанавливает вызывающая сторона
 
 def setup_photos_step(
