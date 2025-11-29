@@ -42,17 +42,30 @@ FORM_TEMPLATES = {
     ],
 }
 
-def _format_caption(form_type: str, data: dict) -> str:
+def _format_caption(form_type: str, data: dict, include_contacts: bool = False) -> str:
+    """Форматирует анкету. Если include_contacts=False, контакты не включаются."""
     caption = [FORM_TITLES.get(form_type, f"<b>{form_type}</b>")]
     for key, label in FORM_TEMPLATES.get(form_type, []):
         value = data.get(key)
         if value is not None and str(value).strip():
             caption.append(f"{label}: {value}")
+    if include_contacts:
+        phone = data.get("phone")
+        contact = data.get("contact")
+        if phone:   caption.append(f"Телефон: {phone}")
+        if contact: caption.append(f"Контакт в Telegram: {contact}")
+    return "\n".join(caption)
+
+def _format_contacts(data: dict) -> str:
+    """Форматирует сообщение с контактами."""
+    contacts = ["<b>📞 Контакты:</b>"]
     phone = data.get("phone")
     contact = data.get("contact")
-    if phone:   caption.append(f"Телефон: {phone}")
-    if contact: caption.append(f"Контакт в Telegram: {contact}")
-    return "\n".join(caption)
+    if phone:
+        contacts.append(f"Телефон: {phone}")
+    if contact:
+        contacts.append(f"Контакт в Telegram: {contact}")
+    return "\n".join(contacts) if len(contacts) > 1 else ""
 
 async def _send_album_or_text(bot: Bot, chat_id: int, photos: list[str], caption: str):
     if not photos:
@@ -68,8 +81,20 @@ async def send_application_to_admin(
     data: dict, bot: Bot, *, form_type: str, photos_key: str = "photos",
     duplicate_to_channel: bool = False
 ):
-    caption = _format_caption(form_type, data)
+    # Формируем анкету без контактов
+    caption = _format_caption(form_type, data, include_contacts=False)
     photos = data.get(photos_key, []) or []
+    
+    # Отправляем анкету (без контактов)
     await _send_album_or_text(bot, settings.ADMIN_CHAT_ID, photos, caption)
+    
+    # Отправляем контакты отдельным сообщением
+    contacts_text = _format_contacts(data)
+    if contacts_text:
+        await bot.send_message(settings.ADMIN_CHAT_ID, contacts_text, parse_mode="HTML")
+    
+    # Если нужно дублировать в канал
     if duplicate_to_channel and getattr(settings, "PUBLICATION_CHANNEL_ID", None):
         await _send_album_or_text(bot, settings.PUBLICATION_CHANNEL_ID, photos, caption)
+        if contacts_text:
+            await bot.send_message(settings.PUBLICATION_CHANNEL_ID, contacts_text, parse_mode="HTML")
