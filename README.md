@@ -198,16 +198,6 @@ BirdBot/
 
 Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для подробностей.
 
-## 🤝 Вклад в проект
-
-Вклад приветствуется! Пожалуйста:
-
-1. Форкните репозиторий
-2. Создайте ветку для новой функции (`git checkout -b feature/AmazingFeature`)
-3. Закоммитьте изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Запушьте в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
 ## 📞 Поддержка
 
 Если у вас есть вопросы или предложения, создайте [Issue](https://github.com/yourusername/BirdBot/issues).
